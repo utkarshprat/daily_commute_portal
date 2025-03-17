@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Commute Dashboard</title>
+</head>
+<body>
+  <h1>Commute Dashboard</h1>
+  <button onclick="fetchDashboard()">Get Stats</button>
+  <div id="stats"></div>
+
+  <script>
+    const token = localStorage.getItem('token'); // if stored in localStorage
+
+    async function fetchDashboard() {
+      if (!token) {
+        alert('Not logged in');
+        return;
+      }
+      try {
+        const res = await fetch('/api/commute/dashboard', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        document.getElementById('stats').innerHTML = `
+          <p>Total Distance: ${data.totalDistance} km</p>
+          <p>Average Time: ${data.averageTime.toFixed(1)} min</p>
+          <p>Total Fare: ${data.totalFare}</p>
+          <p>Total Trips: ${data.totalTrips}</p>
+        `;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
