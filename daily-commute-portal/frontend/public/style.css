@@ -1,0 +1,27 @@
+/* style.css */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+  }
+  
+  nav {
+    background: #333;
+    color: #fff;
+    padding: 1rem;
+  }
+  
+  main {
+    padding: 1rem;
+  }
+  
+  section {
+    margin-bottom: 2rem;
+  }
+  
+  input, button {
+    display: block;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+  }
+  

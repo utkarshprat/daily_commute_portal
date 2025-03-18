@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Forgot Password</title>
+  <style>
+    /* Same styling as your login page */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background: url("background.gif") no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .forgot-container {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 2rem;
+      border-radius: 8px;
+      width: 320px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .forgot-container h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+    .forgot-container input[type="text"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 1rem;
+    }
+    .forgot-container button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      background: #A84332;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .forgot-container button:hover {
+      background: #8c382c;
+    }
+    .forgot-links {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+      text-align: center;
+    }
+    .forgot-links a {
+      text-decoration: none;
+      color: #A84332;
+      transition: color 0.3s;
+    }
+    .forgot-links a:hover {
+      color: #333;
+    }
+    #alertBox {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      display: none;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="forgot-container">
+    <h2>Forgot Password</h2>
+    <div id="alertBox"></div>
+    <form onsubmit="return false;">
+      <input type="text" id="forgotEmail" placeholder="Enter your email" required />
+      <button type="button" onclick="handleForgot()">Send Reset Link</button>
+    </form>
+    <div class="forgot-links">
+      <p>Back to <a href="login.html">Login</a></p>
+    </div>
+  </div>
+
+  <script>
+    async function handleForgot() {
+      const emailEl = document.getElementById('forgotEmail');
+      const alertBox = document.getElementById('alertBox');
+      const email = emailEl.value.trim();
+
+      if (!email) {
+        showAlert('Please enter your email.', 'error');
+        return;
+      }
+
+      try {
+        // POST request to your forgot password endpoint
+        const response = await fetch('/api/auth/forgot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          showAlert(data.message || 'Request failed.', 'error');
+          return;
+        }
+
+        // Typically, the server sends an email with a reset link.
+        // We just show success message here.
+        showAlert(data.message || 'A reset link has been sent to your email.', 'success');
+      } catch (err) {
+        console.error(err);
+        showAlert('An error occurred. Check console.', 'error');
+      }
+    }
+
+    function showAlert(msg, type) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.style.display = 'block';
+      alertBox.textContent = msg;
+
+      if (type === 'error') {
+        alertBox.style.backgroundColor = '#f8d7da';
+        alertBox.style.color = '#721c24';
+      } else if (type === 'success') {
+        alertBox.style.backgroundColor = '#d4edda';
+        alertBox.style.color = '#155724';
+      } else {
+        alertBox.style.backgroundColor = '#ffc107';
+        alertBox.style.color = '#333';
+      }
+    }
+  </script>
+</body>
+</html>

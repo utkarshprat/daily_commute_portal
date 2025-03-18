@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif; 
+    }
+
+    body {
+      background: url("background.gif") no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 2rem;
+      border-radius: 8px;
+      width: 320px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .login-container h2 {
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      background: #A84332;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .login-container button:hover {
+      background: #8c382c;
+    }
+
+    .login-links {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      color: #555;
+    }
+
+    .login-links a {
+      text-decoration: none;
+      color: #A84332;
+      transition: color 0.3s;
+    }
+    .login-links a:hover {
+      color: #333;
+    }
+
+    /* Alert Box (hidden by default) */
+    #alertBox {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      display: none;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+
+    <!-- This div will show success/error messages -->
+    <div id="alertBox"></div>
+
+    <form onsubmit="return false;">
+      <!-- Give IDs so we can grab values in JS -->
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <!-- type="button" so form doesn't auto-submit -->
+      <button type="button" onclick="handleLogin()">Login</button>
+    </form>
+
+    <div class="login-links">
+      <!-- Link to separate pages -->
+      <a href="forgotpass.html">Forgot Password</a>
+      <a href="signup.html">Sign Up</a>
+    </div>
+  </div>
+
+  <script>
+    async function handleLogin() {
+      const userField = document.getElementById('username');
+      const passField = document.getElementById('password');
+      const alertBox = document.getElementById('alertBox');
+  
+      // Grab input values
+      const username = userField.value.trim();
+      const password = passField.value.trim();
+  
+      // Basic validation
+      if (!username || !password) {
+        showAlert('Please enter both username and password.', 'error');
+        return;
+      }
+  
+      try {
+        // Make POST request to your login API endpoint
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }), // Send user input
+        });
+  
+        // Parse JSON response
+        const data = await response.json();
+  
+        // Check if the response was successful
+        if (!response.ok) {
+          if (response.status === 401) {
+            showAlert('Invalid username or password.', 'error');
+          } else {
+            showAlert(data.message || 'Login failed.', 'error');
+          }
+          return;
+        }
+  
+        // Show success message
+        showAlert(data.message || 'Login successful!', 'success');
+  
+        // Save token to local storage
+        localStorage.setItem('token', data.token);
+  
+        // Redirect to the next page
+        window.location.href = "osm-route.html";
+      } catch (err) {
+        console.error('Error:', err);
+        showAlert('An error occurred. Please check the console.', 'error');
+      }
+    }
+  
+    function showAlert(msg, type) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.style.display = 'block';
+      alertBox.textContent = msg;
+  
+      if (type === 'error') {
+        alertBox.style.backgroundColor = '#f8d7da';
+        alertBox.style.color = '#721c24';
+      } else if (type === 'success') {
+        alertBox.style.backgroundColor = '#d4edda';
+        alertBox.style.color = '#155724';
+      } else {
+        // Default style for warnings
+        alertBox.style.backgroundColor = '#ffc107';
+        alertBox.style.color = '#333';
+      }
+  
+      // Automatically hide the alert after 5 seconds
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 5000);
+    }
+  </script>
+  
+</body>
+</html>
